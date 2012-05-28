@@ -1,0 +1,46 @@
+#!/bin/sh
+
+# ==============================================================================
+#   Postflight script for ipfw-configuration installer
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+# ==============================================================================
+
+
+CUSTOM_RULE_FILE="$3/etc/ipfw/ipfw-customrules.conf"
+
+if [[ "$3" == "/" ]]; then
+    echo $SCRIPT_NAME: Installed on startup volume
+
+    echo $SCRIPT_NAME: Starting firewall
+
+    if [[ -f "/usr/local/bin/ipfw-restart.sh" ]]; then
+		/usr/local/bin/ipfw-restart.sh
+    fi
+else
+    echo $SCRIPT_NAME: Installed on non-startup volume
+    echo $SCRIPT_NAME: Skipping firewall startup
+fi
+
+if [[ ! -f $CUSTOM_RULE_FILE ]]; then
+    echo "$SCRIPT_NAME: Creating example custom rules file $CUSTOM_RULE_FILE" 
+    echo "# ==============================" >> $CUSTOM_RULE_FILE
+    echo "# Custom rules for ipfw firewall" >> $CUSTOM_RULE_FILE
+    echo "# ==============================" >> $CUSTOM_RULE_FILE
+    echo "" >> $CUSTOM_RULE_FILE
+    echo "# Example rule" >> $CUSTOM_RULE_FILE
+    echo "# add 030009 allow log ip from 10.0.0.1 to any dst-port 22 in" >> $CUSTOM_RULE_FILE
+    echo "" >> $CUSTOM_RULE_FILE
+fi
+
+exit 0
